@@ -28,4 +28,25 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.post('/register', async (req, res) => {
+  try {
+    const { username, password } = userLoginSchema.parse(req.body); // Validation des données avec Zod
+
+    const hashedPassword = await bcrypt.hash(password, 10); // Hachage du mot de passe
+    const user = await prisma.user.create({
+      data: {
+        username,
+        password: hashedPassword,
+        role: 'user' // Rôle par défaut
+      }
+    });
+    res.status(201).json({ message: "Utilisateur créé", userId: user.id });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+
+
+
 module.exports = router;
