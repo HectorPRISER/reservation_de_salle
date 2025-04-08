@@ -115,6 +115,28 @@ def register():
             flash("Échec de l'inscription, vérifiez vos identifiants", "danger")
     return render_template('register.html')
 
+@app.route('/room/<int:room_id>')
+def room_details(room_id):
+    # Vérifier que l'utilisateur est connecté (token stocké en session)
+    token = session.get('token')
+    if not token:
+        flash("Veuillez vous connecter", "warning")
+        return redirect(url_for('login'))
+    
+    headers = {'Authorization': f'Bearer {token}'}
+    
+    # Récupérer les détails de la salle
+    try:
+        r = requests.get(f"{API_BASE_URL}/rooms/{room_id}", headers=headers)
+        if r.status_code == 200:
+            room_details = r.json()
+        else:
+            room_details = {}
+    except Exception as e:
+        room_details = {}
+    
+    return render_template('room_details.html', room=room_details)
+
 
 # Filtre pour formater les dates ISO en format lisible (ex: 'dd/mm/YYYY HH:MM')
 @app.template_filter('datetimeformat')
