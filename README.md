@@ -1,30 +1,30 @@
-# B3B Events API
+# Reservation de Salle API
 
-## Prisma
+Ce projet est une API de gestion des réservations de salles, conteneurisée avec PostgreSQL, Adminer et Node.js.
 
-### Installation
+## Installation
 
-```bash
-npm install --save-dev prisma
-npm install @prisma/client
-npx prisma init --datasource-provider postgresql
+### 1. Créer le fichier `.env`
+
+À la racine du projet, créez un fichier `.env` avec le contenu suivant (vous pouvez adapter les valeurs si nécessaire) :
+
+```env
+DATABASE_URL=postgres://postgres:postgres@db:5432/app?schema=public
+JWT_SECRET=your-secret-key-here
+PORT=3000
 ```
 
-### Configuration
+### 2. Lancer les conteneurs
+
+Construisez et démarrez tous les services (API, base de données et Adminer) avec Docker Compose :
 
 ```bash
-cp .env.dist .env
+docker-compose up --build
 ```
 
-Puis configurer l'adresse de la bdd dans ce fichier .env
+## Accès
 
-### Migrations
+- **API** : [http://localhost:3000](http://localhost:3000)
+- **Adminer** : [http://localhost:8081](http://localhost:8081)
 
-Décrire les modèles voulus dans `prisma/schema.prisma`.
-
-Générer et éxécuter les migrations :
-
-```bash
-npx prisma migrate dev --name <migration_name>
-npx prisma generate
-```
+Profitez de votre application !
