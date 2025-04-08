@@ -22,9 +22,6 @@ Construisez et démarrez tous les services (API, base de données et Adminer) av
 docker-compose up --build
 ```
 
-## Accès
-
-- **API** : [http://localhost:3000](http://localhost:3000)
-- **Adminer** : [http://localhost:8081](http://localhost:8081)
-
-Profitez de votre application !
+### Accès:
+	-	API : http://127.0.0.1:3000
+	-	Adminer : http://127.0.0.1:8081
