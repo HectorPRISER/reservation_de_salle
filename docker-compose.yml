@@ -1,0 +1,33 @@
+services:
+
+  db:
+    image: postgres:17
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=app
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+    depends_on:
+      - db
+
+  api:
+    image: node:22.14.0
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+      - "5555:5555"
+    working_dir: /app
+    command: npm run dev
+    depends_on:
+      - db
+
+volumes:
+  dbdata:
