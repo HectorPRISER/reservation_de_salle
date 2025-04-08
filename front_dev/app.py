@@ -90,6 +90,32 @@ def logout():
     flash("Déconnexion réussie", "info")
     return redirect(url_for('login'))
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        # Récupérer les données du formulaire
+        username = request.form.get('username')
+        password = request.form.get('password')
+        credentials = {"username": username, "password": password}
+        
+        # Envoyer la requête de login à l'API
+        try:
+            r = requests.post(f"{API_BASE_URL}/auth/register", json=credentials)
+        except Exception as e:
+            flash("Erreur de connexion à l'API", "danger")
+            return redirect(url_for('register'))
+            
+        if r.status_code == 200:
+            data = r.json()
+            session['token'] = data['token']
+            session['username'] = username
+            flash("Inscription réussie", "success")
+            return redirect(url_for('dashboard'))
+        else:
+            flash("Échec de l'inscription, vérifiez vos identifiants", "danger")
+    return render_template('register.html')
+
+
 # Filtre pour formater les dates ISO en format lisible (ex: 'dd/mm/YYYY HH:MM')
 @app.template_filter('datetimeformat')
 def datetimeformat(value, format='%d/%m/%Y %H:%M'):
