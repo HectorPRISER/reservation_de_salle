@@ -168,14 +168,26 @@ def datetimeformat(value, format='%d/%m/%Y %H:%M'):
         return local_dt.strftime(format)
     except Exception:
         return value
-    
+        
     
 @app.route('/book', methods=['GET', 'POST'])
 def book_room():
     token = session.get('token')
+    infos = {}
+
+    # Make sure the token exists before using it to set headers
     if not token:
         flash("Veuillez vous connecter", "warning")
         return redirect(url_for('login'))
+
+    headers = {'Authorization': f'Bearer {token}'}
+    
+    # Now, you can safely make the GET request with headers
+    r = requests.get(f"{API_BASE_URL}/rooms", headers=headers)
+    if r.status_code == 200:
+        infos['rooms'] = r.json()
+    else:
+        infos['rooms'] = []
 
     if request.method == 'POST':
         # Récupérer les données du formulaire de réservation
@@ -199,7 +211,6 @@ def book_room():
             flash("Identifiant de salle non valide.", "danger")
             return redirect(url_for('book_room'))
 
-        headers = {'Authorization': f'Bearer {token}'}
         try:
             # Envoyer la requête POST de réservation à l'API
             response = requests.post(f"{API_BASE_URL}/bookings", json=booking_data, headers=headers)
@@ -212,9 +223,7 @@ def book_room():
             flash("Erreur de connexion à l'API", "danger")
     
     # Pour GET, afficher la page de réservation
-    return render_template('book.html', username=session.get('username'))
-    
-
+    return render_template('book.html', username=session.get('username'), rooms=infos['rooms'])
 @app.route('/create_room', methods=['GET', 'POST'])
 def create_room():
     token = session.get('token')
