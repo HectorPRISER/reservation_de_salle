@@ -1,0 +1,41 @@
+services:
+
+  app:
+    image: node:22.14  #Version Node
+    volumes:
+      - ".:/app"  #Initialize l'application
+    ports:
+      - "3002:3002" #Port de connexion à l'application via serveur
+    command: >
+      bash -c "
+        echo 'Node.js container is running...' &&
+        echo 'You can now execute commands inside this container using:' &&
+        echo 'docker exec -it node-basic-app bash' &&
+        tail -f /dev/null
+      "
+    working_dir: /app
+
+# https://hub.docker.com/_/node
+# docker compose up
+# docker compose up -d
+# docker ps -a
+# docker compose exec <service_name> <path_to_executable> (docker compose exec app bash) --Commande fréquement utilisée
+# docker ocmpose down
+
+
+TUTO INSTALL docker --
+
+1 - implémenter (docker-compose.yml) avec le base docker code ci-dessus
+2 - copier le fichier server.js
+Info : Actuellement vous avez donc les 2 fichiers dans votre projet
+Info 2: N'oublier pas de changer le port dans votre docker-compose si vous l'avez dêjà utiliser pour un autre projet
+3 - Lancer votre projet en ligne de commande à la racine de votre projet "docker compose up -d "
+4 - Une fois votre app lancée executer la commande " docker compose exec app bash "
+5 - Une fois dans le bash lancer la commande " npm install "
+6 - Puis la commande " npm init "
+7 - Installer yarn toujours dans le bash avec la commande " yarn add nodemon -D "
+8 - Toujours dans le bash installer express avec la commande " npm install express "
+9 - Une fois toutes ces étapes faites lancer la commande " exit " pour sortir du bash
+10 - Lancer la commande à la racine de votre projet " docker compose down " afin de fermer votre app
+11 - changer la partie command du docker-compose.yml comme ceci " command: npm run dev "
+12 - Relancer votre server avec la commande " docker compose up -d"
