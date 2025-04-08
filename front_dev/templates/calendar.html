@@ -22,12 +22,27 @@
   </style>
 </head>
 <body>
-  <h2 class="text-center">Calendrier des créneaux disponibles</h2>
-  <div id="calendar"></div>
+  <div class="container mb-4">
+    <h2 class="text-center">Calendrier des créneaux disponibles</h2>
+    <!-- Formulaire pour sélectionner la salle -->
+    <form method="GET" action="{{ url_for('calendar_view') }}" class="form-inline justify-content-center mb-3">
+      <label for="roomSelect" class="mr-2"><strong>Choisissez une salle :</strong></label>
+      <select id="roomSelect" name="room_id" class="form-control" onchange="this.form.submit()">
+        {% for room in rooms %}
+          <option value="{{ room.id }}" {% if room.id == room_id %}selected{% endif %}>
+            {{ room.name }} (ID: {{ room.id }})
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  <div id='calendar'></div>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const calendarEl = document.getElementById('calendar');
-      // Pour cet exemple, on fixe roomId=1, adapte-le au besoin
+      // Utilisation de l'ID de salle passé depuis Flask
       const roomId = {{ room_id }};
       
       const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -38,7 +53,7 @@
           right: 'timeGridDay,listWeek'
         },
         events: function(info, successCallback, failureCallback) {
-          // Récupère la date au format YYYY-MM-DD depuis info.startStr
+          // On récupère la date au format YYYY-MM-DD (extrait de info.startStr)
           const date = info.startStr.split("T")[0];
           
           axios.get(`http://localhost:3000/rooms/${roomId}/availability?date=${date}`)
