@@ -3,118 +3,76 @@
   <head>
     <meta charset="UTF-8" />
     <title>Créer une réservation de salle</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <style>
       body {
-        font-family: Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         background: linear-gradient(135deg, #1a1a1a, #000000);
-        color: white;
         margin: 0;
         padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
       }
-
-      .container {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(15px);
-        border-radius: 12px;
-        padding: 30px;
-        width: 90%;
-        max-width: 400px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      .navbar {
+        background: rgba(0, 0, 0, 0.7);
       }
-
-      h2 {
-        margin-bottom: 20px;
-      }
-
-      label {
-        display: block;
-        margin-top: 15px;
-        margin-bottom: 5px;
-      }
-
-      input {
-        width: 100%;
-        padding: 10px;
-        border-radius: 6px;
-        border: none;
-        margin-bottom: 15px;
-      }
-
-      button {
-        width: 100%;
-        padding: 12px;
-        background-color: #4caf50;
-        border: none;
-        border-radius: 6px;
+      .navbar-brand, .nav-link, .navbar-text {
         color: white;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background-color 0.3s;
       }
-
-      button:hover {
-        background-color: #45a049;
+      .container {
+        max-width: 600px;
+        padding: 20px;
+        margin-top: 50px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
       }
-
-      .message {
-        margin-top: 15px;
-        text-align: center;
+      .btn-submit {
+        background: linear-gradient(135deg, #007bff, #00f2fe);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+      }
+      .btn-submit:hover {
+        transform: scale(1.02);
       }
     </style>
   </head>
-
   <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <a class="navbar-brand" href="{{ url_for('dashboard') }}">Réservation de Salle</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <span class="navbar-text">Connecté(e) en tant que {{ username }}</span>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('logout') }}">Déconnexion</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
     <div class="container">
-      <h2>Créer une réservation</h2>
-      <form id="booking-form">
-        <label for="start">Heure de début :</label>
-        <input type="datetime-local" id="start" name="start" required />
-
-        <label for="end">Heure de fin :</label>
-        <input type="datetime-local" id="end" name="end" required />
-
-        <button type="submit">Réserver</button>
+      <h2 class="text-dark">Créer une réservation</h2>
+      <form method="post" action="{{ url_for('book_room') }}">
+        <!-- Hidden input for the room identifier -->
+        <input type="hidden" name="roomId" value="{{ room_id }}">
+        <div class="form-group">
+          <label for="start">Heure de début :</label>
+          <input type="datetime-local" class="form-control" id="start" name="start" required>
+        </div>
+        <div class="form-group">
+          <label for="end">Heure de fin :</label>
+          <input type="datetime-local" class="form-control" id="end" name="end" required>
+        </div>
+        <button type="submit" class="btn btn-submit">Réserver</button>
       </form>
-
-      <div class="message" id="message"></div>
+      <br>
+      <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Retour au Dashboard</a>
     </div>
-
-    <script>
-      document.getElementById("booking-form").addEventListener("submit", async function (e) {
-        e.preventDefault();
-
-        const roomId = window.location.pathname.match(/\/book\/(\d+)/)?.[1];
-        if (!roomId) {
-          alert("Aucun identifiant de salle trouvé dans l'URL.");
-          return;
-        }
-
-        const start = document.getElementById("start").value;
-        const end = document.getElementById("end").value;
-
-        try {
-          await axios.post(`http://localhost:3000/rooms/${roomId}/bookings`, {
-            start,
-            end
-          });
-
-          document.getElementById("message").textContent = "Réservation créée avec succès !";
-          document.getElementById("message").style.color = "lightgreen";
-          document.getElementById("booking-form").reset();
-        } catch (error) {
-          console.error("Erreur lors de la création de la réservation :", error);
-          document.getElementById("message").textContent =
-            "Erreur lors de la création de la réservation.";
-          document.getElementById("message").style.color = "red";
-        }
-      });
-    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

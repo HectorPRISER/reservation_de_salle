@@ -169,27 +169,51 @@ def datetimeformat(value, format='%d/%m/%Y %H:%M'):
     except Exception:
         return value
     
-@app.get('/book/<room_id>')
-def book(room_id):
-    # Vérifier que l'utilisateur est connecté (token stocké en session)
+    
+@app.route('/book', methods=['GET', 'POST'])
+def book_room():
     token = session.get('token')
     if not token:
         flash("Veuillez vous connecter", "warning")
         return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        # Récupérer les données du formulaire de réservation
+        room_id = request.form.get('roomId')  # Assurez-vous que ce champ correspond à votre formulaire HTML.
+        start = request.form.get('start')
+        end = request.form.get('end')
+
+        # Vérifier que toutes les informations sont présentes
+        if not (room_id and start and end):
+            flash("Tous les champs sont obligatoires.", "danger")
+            return redirect(url_for('book_room'))
+
+        try:
+            # Construire les données selon le format attendu par l'API
+            booking_data = {
+                "roomId": int(room_id),
+                "start": start,
+                "end": end
+            }
+        except ValueError:
+            flash("Identifiant de salle non valide.", "danger")
+            return redirect(url_for('book_room'))
+
+        headers = {'Authorization': f'Bearer {token}'}
+        try:
+            # Envoyer la requête POST de réservation à l'API
+            response = requests.post(f"{API_BASE_URL}/bookings", json=booking_data, headers=headers)
+            if response.status_code == 201:
+                flash("Réservation créée avec succès", "success")
+                return redirect(url_for('dashboard'))
+            else:
+                flash("Erreur lors de la création de la réservation", "danger")
+        except Exception as e:
+            flash("Erreur de connexion à l'API", "danger")
     
-    headers = {'Authorization': f'Bearer {token}'}
+    # Pour GET, afficher la page de réservation
+    return render_template('book.html', username=session.get('username'))
     
-    # Récupérer les détails de la salle
-    try:
-        r = requests.get(f"{API_BASE_URL}/rooms/{room_id}", headers=headers)
-        if r.status_code == 200:
-            room_details = r.json()
-        else:
-            room_details = {}
-    except Exception as e:
-        room_details = {}
-    
-    return render_template('book.html', room=room_details)
 
 @app.route('/create_room', methods=['GET', 'POST'])
 def create_room():
