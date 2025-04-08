@@ -51,7 +51,7 @@ username: admin
 password: admin
 
 
-Martin Bello
+Martin Bellot
 Sébastien Borgne
-Hector Priset	
+Hector Priser
 Raphael Fourquet
