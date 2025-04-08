@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inscription</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .register-container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      max-width: 400px;
+      width: 100%;
+    }
+    .register-container h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .register-container label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+    .register-container input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .register-container button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .register-container button:hover {
+      background-color: #0056b3;
+    }
+    .flash-message {
+      text-align: center;
+      margin-top: 1rem;
+      font-weight: bold;
+      color: red;
+    }
+    .flash-message.success {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <h2>Inscription</h2>
+    <!-- Formulaire d'inscription -->
+    <form id="registerForm">
+      <label for="username">Nom d'utilisateur</label>
+      <input type="text" id="username" name="username" required>
+
+      <label for="password">Mot de passe</label>
+      <input type="password" id="password" name="password" required>
+
+      <label for="confirmPassword">Confirmer le mot de passe</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" required>
+
+      <button type="submit">S'inscrire</button>
+    </form>
+
+    <!-- Flash message displayed from Flask -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-message {% for category, message in messages %}{{ category }} {% endfor %}">
+          {% for category, message in messages %}
+            {{ message }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000';
+    document.getElementById('registerForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      // Vérification de la correspondance entre les mots de passe
+      if (password !== confirmPassword) {
+        alert("Les mots de passe ne correspondent pas.");
+        return;
+      }
+      
+      // Envoi de la requête d'inscription
+      try {
+        const response = await fetch(`${API_URL}/auth/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          alert(data.error || "Erreur lors de l'inscription.");
+        } else {
+          alert("Inscription réussie. Vous pouvez maintenant vous connecter.");
+          // Optionnel : rediriger l'utilisateur vers la page de connexion après quelques secondes
+          setTimeout(() => {
+            window.location.href = '/login.html'; 
+          }, 2000);
+        }
+      } catch (error) {
+        alert("Une erreur est survenue, merci de réessayer.");
+      }
+    });
+  </script>
+</body>
+</html>
