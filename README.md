@@ -49,3 +49,9 @@ python app.py
 Login admin: 
 username: admin	
 password: admin
+
+
+Martin Bello
+Sébastien Borgne
+Hector Priset	
+Raphael Fourquet
