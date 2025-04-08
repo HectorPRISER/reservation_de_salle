@@ -167,6 +167,30 @@ def datetimeformat(value, format='%d/%m/%Y %H:%M'):
         return local_dt.strftime(format)
     except Exception:
         return value
+    
+@app.get('/book/<room_id>')
+def book(room_id):
+    # Vérifier que l'utilisateur est connecté (token stocké en session)
+    token = session.get('token')
+    if not token:
+        flash("Veuillez vous connecter", "warning")
+        return redirect(url_for('login'))
+    
+    headers = {'Authorization': f'Bearer {token}'}
+    
+    # Récupérer les détails de la salle
+    try:
+        r = requests.get(f"{API_BASE_URL}/rooms/{room_id}", headers=headers)
+        if r.status_code == 200:
+            room_details = r.json()
+        else:
+            room_details = {}
+    except Exception as e:
+        room_details = {}
+    
+    return render_template('book.html', room=room_details)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

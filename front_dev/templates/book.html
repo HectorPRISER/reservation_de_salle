@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Créer une réservation de salle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #1a1a1a, #000000);
+        color: white;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border-radius: 12px;
+        padding: 30px;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      h2 {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 5px;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: none;
+        margin-bottom: 15px;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        background-color: #4caf50;
+        border: none;
+        border-radius: 6px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .message {
+        margin-top: 15px;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Créer une réservation</h2>
+      <form id="booking-form">
+        <label for="start">Heure de début :</label>
+        <input type="datetime-local" id="start" name="start" required />
+
+        <label for="end">Heure de fin :</label>
+        <input type="datetime-local" id="end" name="end" required />
+
+        <button type="submit">Réserver</button>
+      </form>
+
+      <div class="message" id="message"></div>
+    </div>
+
+    <script>
+      document.getElementById("booking-form").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const roomId = window.location.pathname.match(/\/book\/(\d+)/)?.[1];
+        if (!roomId) {
+          alert("Aucun identifiant de salle trouvé dans l'URL.");
+          return;
+        }
+
+        const start = document.getElementById("start").value;
+        const end = document.getElementById("end").value;
+
+        try {
+          await axios.post(`http://localhost:3000/rooms/${roomId}/bookings`, {
+            start,
+            end
+          });
+
+          document.getElementById("message").textContent = "Réservation créée avec succès !";
+          document.getElementById("message").style.color = "lightgreen";
+          document.getElementById("booking-form").reset();
+        } catch (error) {
+          console.error("Erreur lors de la création de la réservation :", error);
+          document.getElementById("message").textContent =
+            "Erreur lors de la création de la réservation.";
+          document.getElementById("message").style.color = "red";
+        }
+      });
+    </script>
+  </body>
+</html>
