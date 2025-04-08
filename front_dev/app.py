@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import requests
 from datetime import datetime
+import pytz
 
 app = Flask(__name__)
 app.secret_key = 'remplacez_par_votre_cle_secrete'  # modifiez cette clé pour la production
@@ -73,16 +74,31 @@ def dashboard():
 
 @app.route('/calendar')
 def calendar_view():
-    # Cette route affiche un calendrier avec les créneaux disponibles pour une salle donnée.
+    # Vérifier que l'utilisateur est connecté (token en session)
     token = session.get('token')
     if not token:
         flash("Veuillez vous connecter", "warning")
         return redirect(url_for('login'))
         
-    # Pour cet exemple, nous fixons l'ID de la salle à 1.
-    # Vous pouvez adapter ultérieurement pour permettre à l'utilisateur de choisir une salle.
-    room_id = 1
-    return render_template('calendar.html', room_id=room_id)
+    headers = {'Authorization': f'Bearer {token}'}
+    
+    # Récupérer la liste des salles depuis l'API
+    try:
+        res = requests.get(f"{API_BASE_URL}/rooms", headers=headers)
+        if res.status_code == 200:
+            rooms = res.json()
+        else:
+            rooms = []
+    except Exception as e:
+        rooms = []
+    
+    # Déterminer l'ID de la salle à afficher :
+    # Si un ID de salle est passé en query parameter, on l'utilise, sinon on prend la première salle disponible (si existe)
+    room_id = request.args.get('room_id', type=int)
+    if room_id is None and rooms:
+        room_id = rooms[0]['id']
+    
+    return render_template('calendar.html', rooms=rooms, room_id=room_id)
 
 @app.route('/logout')
 def logout():
@@ -117,12 +133,16 @@ def register():
 
 
 # Filtre pour formater les dates ISO en format lisible (ex: 'dd/mm/YYYY HH:MM')
+
 @app.template_filter('datetimeformat')
 def datetimeformat(value, format='%d/%m/%Y %H:%M'):
     try:
-        # Remplace "Z" pour s'assurer du bon format, puis convertir
-        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
-        return dt.strftime(format)
+        # Supposons que la valeur est au format ISO en UTC
+        utc_dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        # Convertir en fuseau local (ici, par exemple, Europe/Paris)
+        local_tz = pytz.timezone('Europe/Paris')
+        local_dt = utc_dt.astimezone(local_tz)
+        return local_dt.strftime(format)
     except Exception:
         return value
 
