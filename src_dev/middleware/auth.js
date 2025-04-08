@@ -13,8 +13,7 @@ function authenticateToken(req, res, next) {
   });
 }
 
-// Middleware pour vérifier le rôle (exemple : admin)
-function authorizeRole(role) {
+function authorizeRole(role) { // Middleware pour vérifier le rôle (exemple : admin)
   return (req, res, next) => {
     if (req.user.role !== role) {
       return res.status(403).json({ error: "Accès refusé" });

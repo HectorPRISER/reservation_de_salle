@@ -20,8 +20,7 @@ router.get('/', authenticateToken, async (req, res) => {
   }
 });
 
-// POST /bookings – créer une réservation avec vérifications
-router.post('/', authenticateToken, checkBookingConstraints, async (req, res) => {
+router.post('/', authenticateToken, checkBookingConstraints, async (req, res) => { // POST /bookings – créer une réservation avec vérifications
   try {
     const { roomId, start, end } = req.body;
     const newBooking = await prisma.booking.create({
