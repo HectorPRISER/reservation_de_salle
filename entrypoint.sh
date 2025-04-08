@@ -13,5 +13,8 @@ npx prisma generate --schema=./prisma/schema.prisma
 echo "Running Prisma migrations..."
 npx prisma migrate deploy --schema=./prisma/schema.prisma
 
+echo "Seeding the database..."
+node prisma/seed.js
+
 echo "Starting the application..."
 exec npm run dev
