@@ -18,6 +18,25 @@ class TestMeetingRoomAPI(unittest.TestCase):
         r = requests.post(f"{BASE_URL}/auth/login", json=employee_credentials)
         assert r.status_code == 200, "Echec de la connexion employee"
         cls.employee_token = r.json()['token']
+        
+        # Créer une salle à utiliser dans tous les tests
+        headers = {'Authorization': f'Bearer {cls.admin_token}'}
+        room_data = {
+            "name": "Salle Test",
+            "capacity": 10,
+            "features": ["TV", "Tableau blanc"],
+            "rules": {
+                "maxDurationMinutes": 120,
+                "allowWeekends": False,
+                "minAdvanceHours": 3
+            }
+        }
+        r = requests.post(f"{BASE_URL}/rooms", json=room_data, headers=headers)
+        if r.status_code == 201:
+            created_room = r.json()
+            cls.created_room_id = created_room["id"]
+        else:
+            raise Exception("La création de la salle a échoué dans setUpClass.")
 
     def test_get_rooms(self):
         """Teste la récupération de la liste des salles via GET /rooms"""
@@ -41,10 +60,11 @@ class TestMeetingRoomAPI(unittest.TestCase):
             }
         }
         r = requests.post(f"{BASE_URL}/rooms", json=room_data, headers=headers)
-        self.assertEqual(r.status_code, 201)
+        print("Response status code for room creation:", r.status_code)
+        print("Response content:", r.text)
+        self.assertEqual(r.status_code, 201, msg=r.json())
         created_room = r.json()
         self.assertIn("id", created_room)
-        # On sauvegarde l'id de la salle créée pour les tests suivants
         self.__class__.created_room_id = created_room["id"]
 
     def test_get_room_details(self):
@@ -59,14 +79,13 @@ class TestMeetingRoomAPI(unittest.TestCase):
     def test_create_booking(self):
         """Teste la création d'une réservation valide via POST /bookings"""
         room_id = getattr(self.__class__, 'created_room_id', None)
-        self.assertIsNotNone(room_id, "La salle n'a pas été créée dans test_create_room_admin")
+        self.assertIsNotNone(room_id, "La salle n'a pas été créée dans setUpClass")
         headers = {'Authorization': f'Bearer {self.employee_token}'}
         
-        # Création d'une réservation pour demain, de 10h à 11h (respectant le délai minAdvanceHours)
-        now = datetime.now()
-        tomorrow = now + timedelta(days=1, hours=4)
-        start = datetime(tomorrow.year, tomorrow.month, tomorrow.day, 10, 0, 0)
-        end = datetime(tomorrow.year, tomorrow.month, tomorrow.day, 11, 0, 0)
+        # Utiliser la date de demain pour ce test
+        booking_date = datetime.now() + timedelta(days=1)
+        start = booking_date.replace(hour=10, minute=0, second=0, microsecond=0)
+        end = booking_date.replace(hour=11, minute=0, second=0, microsecond=0)
         booking_data = {
             "roomId": room_id,
             "start": start.isoformat(),
@@ -81,23 +100,34 @@ class TestMeetingRoomAPI(unittest.TestCase):
     def test_conflicting_booking(self):
         """Teste la détection d'un conflit de réservation via POST /bookings"""
         room_id = getattr(self.__class__, 'created_room_id', None)
-        self.assertIsNotNone(room_id, "La salle n'a pas été créée dans test_create_room_admin")
+        self.assertIsNotNone(room_id, "La salle n'a pas été créée dans setUpClass")
         headers = {'Authorization': f'Bearer {self.employee_token}'}
         
-        # Essayer de réserver un créneau qui chevauche la réservation précédente (par exemple, de 10h30 à 11h30)
-        now = datetime.now()
-        tomorrow = now + timedelta(days=1, hours=4)
-        start = datetime(tomorrow.year, tomorrow.month, tomorrow.day, 10, 30, 0)
-        end = datetime(tomorrow.year, tomorrow.month, tomorrow.day, 11, 30, 0)
-        booking_data = {
+        # Utiliser une autre date (par exemple, le jour d'après demain) pour isoler ce test
+        booking_date = datetime.now() + timedelta(days=2)
+        # Créer d'abord une réservation valide de 10h à 11h
+        start1 = booking_date.replace(hour=10, minute=0, second=0, microsecond=0)
+        end1 = booking_date.replace(hour=11, minute=0, second=0, microsecond=0)
+        booking_data1 = {
             "roomId": room_id,
-            "start": start.isoformat(),
-            "end": end.isoformat()
+            "start": start1.isoformat(),
+            "end": end1.isoformat()
         }
-        r = requests.post(f"{BASE_URL}/bookings", json=booking_data, headers=headers)
-        # La requête doit renvoyer une erreur (statut 400) car le créneau est en conflit
-        self.assertEqual(r.status_code, 400)
-        error_msg = r.json().get("error")
+        r1 = requests.post(f"{BASE_URL}/bookings", json=booking_data1, headers=headers)
+        self.assertEqual(r1.status_code, 201, msg=r1.json())
+
+        # Tenter ensuite de créer une réservation qui chevauche : de 10h30 à 11h30
+        start2 = booking_date.replace(hour=10, minute=30, second=0, microsecond=0)
+        end2 = booking_date.replace(hour=11, minute=30, second=0, microsecond=0)
+        booking_data2 = {
+            "roomId": room_id,
+            "start": start2.isoformat(),
+            "end": end2.isoformat()
+        }
+        r2 = requests.post(f"{BASE_URL}/bookings", json=booking_data2, headers=headers)
+        # La requête doit renvoyer une erreur (statut 400)
+        self.assertEqual(r2.status_code, 400, msg=f"Réponse reçue : {r2.json()}")
+        error_msg = r2.json().get("error")
         self.assertIsNotNone(error_msg)
 
     def test_get_bookings_employee(self):
@@ -119,13 +149,14 @@ class TestMeetingRoomAPI(unittest.TestCase):
     def test_room_availability(self):
         """Teste la route d'affichage des créneaux disponibles via GET /rooms/:id/availability?date=YYYY-MM-DD"""
         room_id = getattr(self.__class__, 'created_room_id', None)
-        self.assertIsNotNone(room_id, "La salle n'a pas été créée dans test_create_room_admin")
+        self.assertIsNotNone(room_id, "La salle n'a pas été créée dans setUpClass")
+        # Par exemple, utiliser la date de demain pour tester la disponibilité
         tomorrow_date = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
         r = requests.get(f"{BASE_URL}/rooms/{room_id}/availability?date={tomorrow_date}")
         self.assertEqual(r.status_code, 200)
         data = r.json()
-        # Ici, on vérifie la présence de la clé "bookings" (la logique de disponibilité pourra être détaillée dans votre implémentation)
-        self.assertIn("bookings", data)
+        # Modifier le test pour vérifier la présence de la clé 'availability'
+        self.assertIn("availability", data)
 
 if __name__ == '__main__':
     unittest.main()
