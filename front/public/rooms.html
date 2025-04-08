@@ -149,11 +149,12 @@
   <script>
     // Récupérer le token d'authentification depuis le localStorage (pour les actions admin)
     const token = localStorage.getItem('token');
+    const API_URL = 'http://localhost:3000'; // URL de l'API
 
     // Fonction pour charger la liste des salles (GET /rooms)
     async function loadRooms() {
       try {
-        const response = await fetch('http://localhost:3000/rooms', {
+        const response = await fetch(`${API_URL}/rooms`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         });
@@ -208,7 +209,7 @@
       e.preventDefault();
       const roomId = document.getElementById('roomIdDetail').value;
       try {
-        const response = await fetch('/rooms/' + roomId, {
+        const response = await fetch(`${API_URL}/rooms` + roomId, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         });
@@ -236,7 +237,7 @@
       const roomId = document.getElementById('roomIdAvailability').value;
       const date = document.getElementById('dateAvailability').value;
       try {
-        const response = await fetch(`/rooms/${roomId}/availability?date=${date}`, {
+        const response = await fetch(`${API_URL}/rooms/${roomId}/availability?date=${date}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         });
@@ -275,7 +276,7 @@
       const rules = document.getElementById('roomRules').value;
       
       try {
-        const response = await fetch('/rooms', {
+        const response = await fetch(`${API_URL}/rooms`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
