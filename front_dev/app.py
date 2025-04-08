@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import requests
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'remplacez_par_votre_cle_secrete'  # modifiez cette clé pour la production
@@ -70,12 +71,34 @@ def dashboard():
     return render_template('dashboard.html', infos=infos, username=session.get('username'))
 
 
+@app.route('/calendar')
+def calendar_view():
+    # Cette route affiche un calendrier avec les créneaux disponibles pour une salle donnée.
+    token = session.get('token')
+    if not token:
+        flash("Veuillez vous connecter", "warning")
+        return redirect(url_for('login'))
+        
+    # Pour cet exemple, nous fixons l'ID de la salle à 1.
+    # Vous pouvez adapter ultérieurement pour permettre à l'utilisateur de choisir une salle.
+    room_id = 1
+    return render_template('calendar.html', room_id=room_id)
+
 @app.route('/logout')
 def logout():
     session.clear()
     flash("Déconnexion réussie", "info")
     return redirect(url_for('login'))
 
+# Filtre pour formater les dates ISO en format lisible (ex: 'dd/mm/YYYY HH:MM')
+@app.template_filter('datetimeformat')
+def datetimeformat(value, format='%d/%m/%Y %H:%M'):
+    try:
+        # Remplace "Z" pour s'assurer du bon format, puis convertir
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return dt.strftime(format)
+    except Exception:
+        return value
 
 if __name__ == '__main__':
     app.run(debug=True)

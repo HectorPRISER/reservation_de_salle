@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <title>Dashboard - Reservation de Salle API</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+      .card {
+          margin-bottom: 1rem;
+      }
+    </style>
 </head>
 <body class="bg-light">
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -11,7 +16,7 @@
     <div class="collapse navbar-collapse">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <span class="navbar-text">Connecté en tant que {{ username }}</span>
+                <span class="navbar-text">Connecté(e) en tant que {{ username }}</span>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('logout') }}">Déconnexion</a>
@@ -21,35 +26,71 @@
 </nav>
 <div class="container mt-4">
     <h2>Dashboard</h2>
+    
+    <!-- Section Salles -->
     <h4>Salles</h4>
     {% if infos.rooms %}
-      <ul class="list-group">
+      <div class="row">
         {% for room in infos.rooms %}
-          <li class="list-group-item">
-            <strong>ID:</strong> {{ room.id }}, <strong>Nom:</strong> {{ room.name }}, <strong>Capacité:</strong> {{ room.capacity }}
-            <br><strong>Équipements:</strong> {{ room.features | join(', ') }}
-            <br><strong>Règles:</strong> {{ room.rules }}
-          </li>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <strong>{{ room.name }}</strong> (ID: {{ room.id }})
+              </div>
+              <div class="card-body">
+                <p><strong>Capacité:</strong> {{ room.capacity }}</p>
+                <p><strong>Équipements:</strong> {{ room.features | join(', ') }}</p>
+                <p><strong>Règles:</strong></p>
+                {% if room.rules %}
+                  <ul>
+                    {% for key, value in room.rules.items() %}
+                      <li>{{ key }}: {{ value }}</li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p>Aucune règle définie.</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
         {% endfor %}
-      </ul>
+      </div>
     {% else %}
       <p>Aucune salle trouvée.</p>
     {% endif %}
+
     <hr>
+    
+    <!-- Section Réservations -->
     <h4>Réservations</h4>
     {% if infos.bookings %}
-      <ul class="list-group">
-        {% for booking in infos.bookings %}
-          <li class="list-group-item">
-            <strong>ID:</strong> {{ booking.id }}<br>
-            <strong>Créneau:</strong> {{ booking.start }} - {{ booking.end }}<br>
-            <strong>Utilisateur ID:</strong> {{ booking.userId }} | <strong>Salle ID:</strong> {{ booking.roomId }}
-          </li>
-        {% endfor %}
-      </ul>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Créneau</th>
+            <th>Utilisateur ID</th>
+            <th>Salle ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for booking in infos.bookings %}
+            <tr>
+              <td>{{ booking.id }}</td>
+              <td>
+                {{ booking.start | datetimeformat }}<br>
+                <small>jusqu'à {{ booking.end | datetimeformat("%H:%M") }}</small>
+              </td>
+              <td>{{ booking.userId }}</td>
+              <td>{{ booking.roomId }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     {% else %}
       <p>Aucune réservation trouvée.</p>
     {% endif %}
+    
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>

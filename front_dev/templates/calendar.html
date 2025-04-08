@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Calendrier des créneaux disponibles</title>
+  <!-- Inclusion de FullCalendar (version 6.1.7) avec les bons liens -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js"></script>
+  <!-- Inclusion d'Axios pour les requêtes HTTP -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    body {
+      margin: 40px 10px;
+      padding: 0;
+      font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+      font-size: 14px;
+    }
+    #calendar {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <h2 class="text-center">Calendrier des créneaux disponibles</h2>
+  <div id="calendar"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const calendarEl = document.getElementById('calendar');
+      // Pour cet exemple, on fixe roomId=1, adapte-le au besoin
+      const roomId = {{ room_id }};
+      
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridDay',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'timeGridDay,listWeek'
+        },
+        events: function(info, successCallback, failureCallback) {
+          // Récupère la date au format YYYY-MM-DD depuis info.startStr
+          const date = info.startStr.split("T")[0];
+          
+          axios.get(`http://localhost:3000/rooms/${roomId}/availability?date=${date}`)
+            .then(response => {
+              // La réponse attendue est { availability: [ { start: ISOString, end: ISOString }, ... ] }
+              const events = response.data.availability.map(slot => ({
+                title: 'Disponible',
+                start: slot.start,
+                end: slot.end,
+                color: 'green'
+              }));
+              successCallback(events);
+            })
+            .catch(error => {
+              console.error('Erreur lors de la récupération des disponibilités', error);
+              failureCallback(error);
+            });
+        }
+      });
+      calendar.render();
+    });
+  </script>
+</body>
+</html>
