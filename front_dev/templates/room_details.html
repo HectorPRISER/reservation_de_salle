@@ -19,23 +19,32 @@
 
       .room-container {
         background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(20px); /* Enhanced blur effect */
+        -webkit-backdrop-filter: blur(20px); /* For Safari */
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
         max-width: 90%;
         width: 100%;
         max-width: 450px;
         color: white;
+        transition: all 0.3s ease;
+      }
+
+      .room-container:hover {
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); /* Hover effect */
+        transform: translateY(-10px);
       }
 
       .room-container h2 {
         text-align: center;
-        font-size: 30px;
+        font-size: 36px; /* Larger heading */
         font-weight: 700;
         margin-bottom: 1.5rem;
         color: #ffffff;
+        background: linear-gradient(135deg, #007bff, #00f2fe); /* Gradient text */
+        -webkit-background-clip: text;
+        color: transparent;
       }
 
       .room-details {
@@ -62,7 +71,7 @@
         display: block;
         width: 100%;
         padding: 14px;
-        background-color: rgba(0, 122, 255, 0.7);
+        background: linear-gradient(135deg, #00b5ff, #007bff); /* Gradient button */
         color: white;
         border: none;
         border-radius: 12px;
@@ -70,17 +79,38 @@
         font-weight: 600;
         text-align: center;
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition: background 0.3s ease, transform 0.3s ease;
         margin-top: 1.5rem;
         text-decoration: none;
       }
 
       .back-button:hover {
-        background-color: rgba(0, 122, 255, 1);
+        background: linear-gradient(135deg, #007bff, #00b5ff);
+        transform: scale(1.05); /* Slight grow on hover */
       }
 
       .back-button:active {
         background-color: rgba(0, 100, 200, 1);
+        transform: scale(0.98); /* Button shrink effect on active */
+      }
+
+      /* Responsive adjustments for smaller screens */
+      @media (max-width: 768px) {
+        .room-container {
+          padding: 20px;
+        }
+
+        .room-container h2 {
+          font-size: 28px;
+        }
+
+        .room-details {
+          font-size: 14px;
+        }
+
+        .back-button {
+          padding: 12px;
+        }
       }
     </style>
   </head>
@@ -109,7 +139,7 @@
       </div>
 
       <!-- Back button to return to the room list -->
-      <a href="/rooms" class="back-button">Retour à la liste des salles</a>
+      <a href="/dashboard" class="back-button">Retour</a>
     </div>
   </body>
 </html>
