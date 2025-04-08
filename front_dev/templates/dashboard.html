@@ -1,136 +1,147 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Dashboard - Reservation de Salle API</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        background: linear-gradient(135deg, #1a1a1a, #000000);
-        margin: 0;
-        padding: 0;
-      }
-      .navbar {
-        background: rgba(0, 0, 0, 0.7); /* Transparent background for navbar */
-      }
-      .navbar-brand {
-        color: white;
-      }
-      .navbar-nav .nav-item .nav-link {
-        color: white;
-      }
-      .card {
-        margin-bottom: 1rem;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-radius: 10px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-      }
-      .card:hover {
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-        transform: translateY(-5px);
-      }
-      .card-header {
-        background: linear-gradient(135deg, #007bff, #00f2fe);
-        color: white;
-        font-weight: bold;
-      }
-      .card-body {
-        color: white;
-        font-size: 16px;
-      }
-      .card-body p {
-        margin-bottom: 10px;
-      }
-      .table {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        color: white;
-      }
-      .table th, .table td {
-        vertical-align: middle;
-      }
-      .container {
-        max-width: 1200px;
-        margin-top: 50px;
-        padding: 20px;
-      }
-      .back-button {
-        display: block;
-        width: 100%;
-        padding: 14px;
-        background: linear-gradient(135deg, #00b5ff, #007bff);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-size: 18px;
-        font-weight: 600;
-        text-align: center;
-        cursor: pointer;
-        transition: background 0.3s ease, transform 0.3s ease;
-        margin-top: 1.5rem;
-        text-decoration: none;
-      }
-      .back-button:hover {
-        background: linear-gradient(135deg, #007bff, #00b5ff);
-        transform: scale(1.05);
-      }
-      .back-button:active {
-        background-color: rgba(0, 100, 200, 1);
-        transform: scale(0.98);
-      }
-    </style>
+  <meta charset="UTF-8">
+  <title>Dashboard - Reservation de Salle API</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a1a, #000000);
+      margin: 0;
+      padding: 0;
+    }
+    .navbar {
+      background: rgba(0, 0, 0, 0.7);
+    }
+    .navbar-brand {
+      color: white;
+    }
+    .navbar-nav .nav-item .nav-link {
+      color: white;
+    }
+    .card {
+      margin-bottom: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+      transform: translateY(-5px);
+    }
+    .card-header {
+      background: linear-gradient(135deg, #007bff, #00f2fe);
+      color: white;
+      font-weight: bold;
+    }
+    .card-body {
+      color: white;
+      font-size: 16px;
+    }
+    .card-body p {
+      margin-bottom: 10px;
+    }
+    .table {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      color: white;
+    }
+    .table th, .table td {
+      vertical-align: middle;
+    }
+    .container {
+      max-width: 1200px;
+      margin-top: 50px;
+      padding: 20px;
+    }
+    .back-button {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #00b5ff, #007bff);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+      margin-top: 1.5rem;
+      text-decoration: none;
+    }
+    .back-button:hover {
+      background: linear-gradient(135deg, #007bff, #00b5ff);
+      transform: scale(1.05);
+    }
+    .back-button:active {
+      background-color: rgba(0, 100, 200, 1);
+      transform: scale(0.98);
+    }
+    /* Style pour que le lien (<a>) ressemble à une carte complète */
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+  </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark">
+  <nav class="navbar navbar-expand-lg navbar-dark">
     <a class="navbar-brand" href="#">Reservation de Salle</a>
     <div class="collapse navbar-collapse">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('calendar_view') }}">Calendrier</a>
-            </li>
-            <li class="nav-item">
-                <span class="navbar-text">Connecté(e) en tant que {{ username }}</span>
-            </li>
-            
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('logout') }}">Déconnexion</a>
-            </li>
-        </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('calendar_view') }}">Calendrier</a>
+        </li>
+        <li class="nav-item">
+          <span class="navbar-text">Connecté(e) en tant que {{ username }}</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('logout') }}">Déconnexion</a>
+        </li>
+      </ul>
     </div>
-</nav>
-<div class="container">
+  </nav>
+  <div class="container">
     <h2 class="text-white">Dashboard</h2>
-    
+    <a href="{{ url_for('create_room') }}" class="btn btn-primary mb-3">Créer une Salle</a>
     <!-- Section Salles -->
     <h4 class="text-white">Salles</h4>
     {% if infos.rooms %}
       <div class="row">
         {% for room in infos.rooms %}
-          <div class="col-md-6" onclick="window.location.href='room/{{ room.id }}'">
-            <div class="card">
-              <div class="card-header">
-                <strong>{{ room.name }}</strong> (ID: {{ room.id }})
+          <div class="col-md-6">
+            <a href="{{ url_for('room_details', room_id=room.id) }}" class="card-link">
+              <div class="card">
+                <div class="card-header">
+                  <strong>{{ room.name }}</strong> (ID: {{ room.id }})
+                </div>
+                <div class="card-body">
+                  <p><strong>Capacité:</strong> {{ room.capacity }}</p>
+                  <p><strong>Équipements:</strong> {{ room.features | join(', ') }}</p>
+                  <p><strong>Règles:</strong></p>
+                  {% if room.rules %}
+                    {% if room.rules is mapping %}
+                      <ul>
+                        {% for key, value in room.rules.items() %}
+                          <li>{{ key }}: {{ value }}</li>
+                        {% endfor %}
+                      </ul>
+                    {% else %}
+                      <p>{{ room.rules }}</p>
+                    {% endif %}
+                  {% else %}
+                    <p>Aucune règle définie.</p>
+                  {% endif %}
+                </div>
               </div>
-              <div class="card-body">
-                <p><strong>Capacité:</strong> {{ room.capacity }}</p>
-                <p><strong>Équipements:</strong> {{ room.features | join(', ') }}</p>
-                <p><strong>Règles:</strong></p>
-                {% if room.rules %}
-                  <ul>
-                    {% for key, value in room.rules.items() %}
-                      <li>{{ key }}: {{ value }}</li>
-                    {% endfor %}
-                  </ul>
-                {% else %}
-                  <p>Aucune règle définie.</p>
-                {% endif %}
-              </div>
-            </div>
+            </a>
           </div>
         {% endfor %}
       </div>
@@ -139,7 +150,7 @@
     {% endif %}
 
     <hr class="bg-white">
-    
+
     <!-- Section Réservations -->
     <h4 class="text-white">Réservations</h4>
     {% if infos.bookings %}
@@ -169,10 +180,10 @@
     {% else %}
       <p class="text-white">Aucune réservation trouvée.</p>
     {% endif %}
-    
-</div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

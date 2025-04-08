@@ -190,6 +190,44 @@ def book(room_id):
     
     return render_template('book.html', room=room_details)
 
+@app.route('/create_room', methods=['GET', 'POST'])
+def create_room():
+    token = session.get('token')
+    if not token:
+        flash("Veuillez vous connecter", "warning")
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        # Récupérer les données du formulaire
+        name = request.form.get('name')
+        capacity = request.form.get('capacity')
+        features = request.form.get('features')
+        rules = request.form.get('rules')
+        
+        # Traitement du champ "features" en liste (les équipements séparés par des virgules)
+        features_list = [feature.strip() for feature in features.split(',')] if features else []
+        
+        # Préparer les données dans le format attendu par votre API
+        room_data = {
+            "name": name,
+            "capacity": int(capacity),
+            "features": features_list,
+            "rules": rules  # Vous pouvez également envoyer un objet JSON si besoin
+        }
+        
+        headers = {'Authorization': f'Bearer {token}'}
+        try:
+            # Envoyer la requête POST de création à l'API
+            response = requests.post(f"{API_BASE_URL}/rooms", json=room_data, headers=headers)
+            if response.status_code == 201:
+                flash("Salle créée avec succès", "success")
+                return redirect(url_for('dashboard'))
+            else:
+                flash("Erreur lors de la création de la salle", "danger")
+        except Exception as e:
+            flash("Erreur de connexion à l'API", "danger")
+    
+    return render_template('create_room.html', username=session.get('username'))
 
 
 if __name__ == '__main__':

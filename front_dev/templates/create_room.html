@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Créer une Salle</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+      body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          background: linear-gradient(135deg, #1a1a1a, #000000);
+          margin: 0;
+          padding: 0;
+      }
+      .navbar {
+          background: rgba(0, 0, 0, 0.7);
+      }
+      .navbar-brand, .nav-link, .navbar-text {
+          color: white;
+      }
+      .container {
+          max-width: 600px;
+          padding: 20px;
+          margin-top: 50px;
+      }
+      .btn-submit {
+          background: linear-gradient(135deg, #007bff, #00f2fe);
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 5px;
+      }
+      .btn-submit:hover {
+          transform: scale(1.02);
+      }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <a class="navbar-brand" href="{{ url_for('dashboard') }}">Reservation de Salle</a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('calendar_view') }}">Calendrier</a>
+            </li>
+            <li class="nav-item">
+                <span class="navbar-text">Connecté(e) en tant que {{ username }}</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">Déconnexion</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <h2 class="text-white">Créer une Salle</h2>
+    <form method="post" action="{{ url_for('create_room') }}">
+        <div class="form-group">
+            <label for="name" class="text-white">Nom de la Salle</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Entrez le nom de la salle" required>
+        </div>
+        <div class="form-group">
+            <label for="capacity" class="text-white">Capacité</label>
+            <input type="number" class="form-control" id="capacity" name="capacity" placeholder="Capacité de la salle" required>
+        </div>
+        <div class="form-group">
+            <label for="features" class="text-white">Équipements</label>
+            <input type="text" class="form-control" id="features" name="features" placeholder="Liste d'équipements séparés par des virgules">
+        </div>
+        <div class="form-group">
+            <label for="rules" class="text-white">Règles</label>
+            <textarea class="form-control" id="rules" name="rules" placeholder="Décrivez les règles de la salle"></textarea>
+        </div>
+        <button type="submit" class="btn btn-submit">Créer la Salle</button>
+    </form>
+    <br>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Retour au Dashboard</a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
