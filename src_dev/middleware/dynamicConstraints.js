@@ -8,35 +8,31 @@ async function checkBookingConstraints(req, res, next) {
     const bookingEnd = new Date(end);
     const now = new Date();
 
-    // Récupération de la salle et de ses règles
-    const room = await prisma.room.findUnique({ where: { id: parseInt(roomId) } });
+    const room = await prisma.room.findUnique({ where: { id: parseInt(roomId) } }); // Récupération de la salle et de ses règles
     if (!room) {
       return res.status(404).json({ error: "Salle non trouvée" });
     }
     const rules = room.rules; // On suppose que rules est un objet JSON déjà parsé
 
-    // 1. Vérification de la durée maximale
-    const durationMinutes = (bookingEnd - bookingStart) / (1000 * 60);
+    
+    const durationMinutes = (bookingEnd - bookingStart) / (1000 * 60); // 1. Vérification de la durée maximale
     if (rules.maxDurationMinutes && durationMinutes > rules.maxDurationMinutes) {
       return res.status(400).json({ error: `La salle ${room.name} n'autorise pas les réservations de plus de ${rules.maxDurationMinutes} minutes.` });
     }
 
-    // 2. Vérification de l’interdiction de réserver le week-end
-    const dayOfWeek = bookingStart.getDay();
-    // En JS, 0 = dimanche, 6 = samedi
-    if (!rules.allowWeekends && (dayOfWeek === 0 || dayOfWeek === 6)) {
+    
+    const dayOfWeek = bookingStart.getDay(); // 2. Vérification de l’interdiction de réserver le week-end
+    if (!rules.allowWeekends && (dayOfWeek === 0 || dayOfWeek === 6)) { // En JS, 0 = dimanche, 6 = samedi
       return res.status(400).json({ error: `La salle ${room.name} n'autorise pas les réservations le week-end.` });
     }
 
-    // 3. Vérification du délai minimal avant réservation
-    const minAdvanceHours = rules.minAdvanceHours || 0;
+    const minAdvanceHours = rules.minAdvanceHours || 0; // 3. Vérification du délai minimal avant réservation
     const diffHours = (bookingStart - now) / (1000 * 60 * 60);
     if (diffHours < minAdvanceHours) {
       return res.status(400).json({ error: `La réservation doit être effectuée au moins ${minAdvanceHours} heures à l'avance.` });
     }
 
-    // 4. Vérifier le conflit de réservation (aucun chevauchement)
-    const conflictingBooking = await prisma.booking.findFirst({
+    const conflictingBooking = await prisma.booking.findFirst({  // 4. Vérifier le conflit de réservation (aucun chevauchement)
       where: {
         roomId: parseInt(roomId),
         // Condition : les réservations existantes empiètent sur le créneau demandé

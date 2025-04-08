@@ -9,8 +9,7 @@ const prisma = new PrismaClient();
 
 router.post('/login', async (req, res) => {
   try {
-    // Validation des données avec Zod
-    const { username, password } = userLoginSchema.parse(req.body);
+    const { username, password } = userLoginSchema.parse(req.body); // Validation des données avec Zod
 
     const user = await prisma.user.findUnique({ where: { username } });
     if (!user) {
@@ -20,8 +19,7 @@ router.post('/login', async (req, res) => {
     if (!valid) {
       return res.status(401).json({ error: "Mot de passe invalide" });
     }
-    // Création du token
-    const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, { // Création du token
       expiresIn: '1h'
     });
     res.json({ token });
