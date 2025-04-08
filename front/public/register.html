@@ -82,6 +82,7 @@
   </div>
 
   <script>
+    const API_URL = 'http://localhost:3000';
     document.getElementById('registerForm').addEventListener('submit', async function(event) {
       event.preventDefault();
       const username = document.getElementById('username').value.trim();
@@ -98,7 +99,7 @@
       
       // Envoi de la requête d'inscription
       try {
-        const response = await fetch('/register', {
+        const response = await fetch(`${API_URL}/auth/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
