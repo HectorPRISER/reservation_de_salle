@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Reservation de Salle API</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Reservation de Salle</a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <span class="navbar-text">Connecté en tant que {{ username }}</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">Déconnexion</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container mt-4">
+    <h2>Dashboard</h2>
+    <h4>Salles</h4>
+    {% if infos.rooms %}
+      <ul class="list-group">
+        {% for room in infos.rooms %}
+          <li class="list-group-item">
+            <strong>ID:</strong> {{ room.id }}, <strong>Nom:</strong> {{ room.name }}, <strong>Capacité:</strong> {{ room.capacity }}
+            <br><strong>Équipements:</strong> {{ room.features | join(', ') }}
+            <br><strong>Règles:</strong> {{ room.rules }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Aucune salle trouvée.</p>
+    {% endif %}
+    <hr>
+    <h4>Réservations</h4>
+    {% if infos.bookings %}
+      <ul class="list-group">
+        {% for booking in infos.bookings %}
+          <li class="list-group-item">
+            <strong>ID:</strong> {{ booking.id }}<br>
+            <strong>Créneau:</strong> {{ booking.start }} - {{ booking.end }}<br>
+            <strong>Utilisateur ID:</strong> {{ booking.userId }} | <strong>Salle ID:</strong> {{ booking.roomId }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Aucune réservation trouvée.</p>
+    {% endif %}
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
