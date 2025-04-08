@@ -12,6 +12,7 @@ API_BASE_URL = 'http://localhost:3000'
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+    print("Tentative de connexion")
     if request.method == 'POST':
         # Récupérer les données du formulaire
         username = request.form.get('username')
