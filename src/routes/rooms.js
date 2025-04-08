@@ -66,7 +66,14 @@ router.get('/:id/availability', async (req, res) => {
     if (isNaN(queryDate.getTime())) {
       return res.status(400).json({ error: "Date invalide" });
     }
-    
+
+    // Vérifie si le jour est un week-end (samedi = 6, dimanche = 0)
+    const allowWeekends = false;
+    const dayOfWeek = queryDate.getDay();
+    if (!allowWeekends && (dayOfWeek === 0 || dayOfWeek === 6)) {
+      return res.status(200).json({ availability: [] });
+    }
+
     // Définir les bornes de la journée (ici, de 08h à 18h)
     const dayStart = new Date(queryDate);
     dayStart.setHours(8, 0, 0, 0);
@@ -98,14 +105,11 @@ router.get('/:id/availability', async (req, res) => {
       bookings.forEach(booking => {
         const bookingStart = new Date(booking.start);
         const bookingEnd = new Date(booking.end);
-        // Si un intervalle est libre avant la réservation actuelle
         if (currentStart < bookingStart) {
           availableSlots.push({ start: new Date(currentStart), end: new Date(bookingStart) });
         }
-        // Mettre à jour currentStart à la fin de la réservation en cours
         currentStart = bookingEnd;
       });
-      // Vérifier s'il reste un créneau libre après la dernière réservation
       if (currentStart < dayEnd) {
         availableSlots.push({ start: currentStart, end: dayEnd });
       }
