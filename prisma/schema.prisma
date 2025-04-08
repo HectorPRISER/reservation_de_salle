@@ -1,0 +1,35 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Room {
+  id       Int      @id @default(autoincrement())
+  name     String
+  capacity Int
+  features Json
+  rules    Json
+  bookings Booking[]
+}
+
+model Booking {
+  id      Int      @id @default(autoincrement())
+  start   DateTime
+  end     DateTime
+  userId  Int
+  roomId  Int
+  user    User     @relation(fields: [userId], references: [id])
+  room    Room     @relation(fields: [roomId], references: [id])
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  username String  @unique
+  password String  // Pensez à hasher ce mot de passe
+  role     String  // "employee" ou "admin"
+  bookings Booking[]
+}
