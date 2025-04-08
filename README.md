@@ -21,6 +21,7 @@ Construisez et démarrez tous les services (API, base de données et Adminer) av
 ```bash
 docker-compose up --build
 ```
+⚠️ Si une erreur est causée à cause de entrypoint.sh, recréez simplement le fichier pour l'encoder en fonction de votre OS.
 
 ### Accès:
 	-	API : http://127.0.0.1:3000
