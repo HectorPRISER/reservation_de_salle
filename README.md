@@ -1,6 +1,7 @@
 # Reservation de Salle API
 
 Ce projet est une API de gestion des réservations de salles, conteneurisée avec PostgreSQL, Adminer et Node.js.
+Une ébauche de front end et disponible.
 
 ## Installation
 
@@ -29,7 +30,22 @@ docker-compose up --build
 
 
 ### TESTS:
-
+Les tests automatisées permettent de s'assurer du bon fonctionnement de tous les composants du backend, mais également de créer quelques données.
 ```bash
 python tests/tester.py
 ```
+
+### FRONT END:
+
+Pour lancer le serveur front:
+Requirements: Python v >= 3.12
+
+```bash
+cd front_dev
+pip install requirements.txt
+python app.py
+```
+
+Login admin: 
+username: admin	
+password: admin
