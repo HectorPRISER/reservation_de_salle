@@ -37,7 +37,7 @@ router.post('/register', async (req, res) => {
       data: {
         username,
         password: hashedPassword,
-        role: 'user' // Rôle par défaut
+        role: 'user' // Rôle par défaut: gérer employé ou admin ensuite 
       }
     });
     res.status(201).json({ message: "Utilisateur créé", userId: user.id });
