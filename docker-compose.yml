@@ -18,14 +18,13 @@ services:
       - db
 
   api:
-    image: node:22.14.0
-    volumes:
-      - .:/app
+    build: .
     ports:
       - "3000:3000"
       - "5555:5555"
+    volumes:
+      - .:/app
     working_dir: /app
-    command: npm run dev
     depends_on:
       - db
 
