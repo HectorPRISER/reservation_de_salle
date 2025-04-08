@@ -203,17 +203,37 @@ def create_room():
         name = request.form.get('name')
         capacity = request.form.get('capacity')
         features = request.form.get('features')
-        rules = request.form.get('rules')
         
-        # Traitement du champ "features" en liste (les équipements séparés par des virgules)
+        # Transformation du champ features en liste (séparateur virgule)
         features_list = [feature.strip() for feature in features.split(',')] if features else []
         
-        # Préparer les données dans le format attendu par votre API
+        # Récupérer les valeurs spécifiques aux règles
+        try:
+            max_duration = int(request.form.get('maxDurationMinutes'))
+        except (TypeError, ValueError):
+            max_duration = 120  # Valeur par défaut si nécessaire
+        
+        try:
+            min_advance = int(request.form.get('minAdvanceHours'))
+        except (TypeError, ValueError):
+            min_advance = 3  # Valeur par défaut si nécessaire
+        
+        # La case checkbox renvoie 'on' si cochée, sinon None
+        allow_weekends = True if request.form.get('allowWeekends') == 'on' else False
+        
+        # Construire l'objet rules
+        rules_obj = {
+            "maxDurationMinutes": max_duration,
+            "minAdvanceHours": min_advance,
+            "allowWeekends": allow_weekends
+        }
+        
+        # Préparer les données dans le format attendu par l'API
         room_data = {
             "name": name,
             "capacity": int(capacity),
             "features": features_list,
-            "rules": rules  # Vous pouvez également envoyer un objet JSON si besoin
+            "rules": rules_obj
         }
         
         headers = {'Authorization': f'Bearer {token}'}

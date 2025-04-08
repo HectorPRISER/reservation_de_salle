@@ -21,6 +21,9 @@
           max-width: 600px;
           padding: 20px;
           margin-top: 50px;
+          background: #fff;
+          border-radius: 8px;
+          box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
       }
       .btn-submit {
           background: linear-gradient(135deg, #007bff, #00f2fe);
@@ -40,7 +43,7 @@
     <div class="collapse navbar-collapse">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('calendar_view') }}">Calendrier</a>
+                <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
             </li>
             <li class="nav-item">
                 <span class="navbar-text">Connecté(e) en tant que {{ username }}</span>
@@ -52,23 +55,32 @@
     </div>
 </nav>
 <div class="container">
-    <h2 class="text-white">Créer une Salle</h2>
+    <h2 class="text-dark">Créer une Salle</h2>
     <form method="post" action="{{ url_for('create_room') }}">
         <div class="form-group">
-            <label for="name" class="text-white">Nom de la Salle</label>
+            <label for="name">Nom de la Salle</label>
             <input type="text" class="form-control" id="name" name="name" placeholder="Entrez le nom de la salle" required>
         </div>
         <div class="form-group">
-            <label for="capacity" class="text-white">Capacité</label>
+            <label for="capacity">Capacité</label>
             <input type="number" class="form-control" id="capacity" name="capacity" placeholder="Capacité de la salle" required>
         </div>
         <div class="form-group">
-            <label for="features" class="text-white">Équipements</label>
+            <label for="features">Équipements</label>
             <input type="text" class="form-control" id="features" name="features" placeholder="Liste d'équipements séparés par des virgules">
         </div>
+        <h4 class="mt-4">Règles</h4>
         <div class="form-group">
-            <label for="rules" class="text-white">Règles</label>
-            <textarea class="form-control" id="rules" name="rules" placeholder="Décrivez les règles de la salle"></textarea>
+            <label for="maxDurationMinutes">Durée maximale (minutes)</label>
+            <input type="number" class="form-control" id="maxDurationMinutes" name="maxDurationMinutes" placeholder="Ex: 120" required>
+        </div>
+        <div class="form-group">
+            <label for="minAdvanceHours">Délai minimal avant réservation (heures)</label>
+            <input type="number" class="form-control" id="minAdvanceHours" name="minAdvanceHours" placeholder="Ex: 3" required>
+        </div>
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="allowWeekends" name="allowWeekends">
+            <label class="form-check-label" for="allowWeekends">Autoriser les réservations le week-end</label>
         </div>
         <button type="submit" class="btn btn-submit">Créer la Salle</button>
     </form>
