@@ -25,3 +25,10 @@ docker-compose up --build
 ### Accès:
 	-	API : http://127.0.0.1:3000
 	-	Adminer : http://127.0.0.1:8081
+
+
+### TESTS:
+
+```bash
+python tests/tester.py
+```
