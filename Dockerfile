@@ -21,4 +21,4 @@ COPY entrypoint.sh ./
 RUN chmod +x entrypoint.sh
 
 # Démarrer l'application en utilisant l'entrypoint
-CMD ["./entrypoint.sh"]
+ENTRYPOINT [ "/app/entrypoint.sh" ]
